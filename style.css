@@ -5,41 +5,6 @@
 body {
     background-color: #000000;
 }
-header {
-    background-color:rgba(35,28,26,0.8);
-    height:80px;
-    width:100%;
-    position:fixed;    
-}
-h1 {
-    color:white;
-    position:absolute;
-    left:120px;
-    top:0;
-    line-height: 80px;
-    background-image:url(images/logo.svg) ;
-    background-repeat: no-repeat;
-    background-position: center;
-    width:210px;
-    text-indent: -9999px; 
-}
-header ul {
-    position:absolute;
-    right:5vw;
-    top:0;
-    line-height:80px;
-}
-header li {
-    display:inline;
-    margin-right:4vw;    
-}
-header a {
-    color:white;
-    text-decoration: none;
-}
-header a:hover {
-    text-decoration: underline;
-}
 .welcome {
     background-color: #4a7bca;
     color:white;
