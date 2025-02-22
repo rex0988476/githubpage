@@ -56,6 +56,9 @@ header a:hover {
 .welcome h2 {
     font-size:60px;
     margin-top:60px;
+    align-items: center; /* 讓內容水平置中 */
+    justify-content: center; /* 讓內容垂直置中 */
+    text-align: center; /* 確保多行文字也置中 */
 } 
 .welcome p {
     color:white;
@@ -84,27 +87,30 @@ header a:hover {
 }
 .info div {
     width:50%;
+    
 }
 .about {
-    
     background-color: #9996e3;
     display:flex;
-    flex-direction:column;
+    flex-direction:row;
     align-items: center;
     justify-content: center;
 }
-.about h2 {
-    font-size:40px;
-    margin-bottom: 30px;
+.about img {
+    width: 100%; /* 讓圖片適應區塊 */
+    max-width: 350px; /* 限制圖片最大寬度 */
+    border-radius: 10px;
 }
-.about p {
-    text-align: center;
-    line-height: 2em;
+.about ul {
+    list-style-type: disc;
+    text-align: left;
+    padding-left: 20px;
 }
+
 .about li {
     color: #2f3336;
-    font-size:30px;
-    margin-bottom: 30px;
+    font-size: 24px; /* 調整字體大小 (30)*/
+    margin-bottom: 25px; /* 減少行距 (30)*/
 }
 .hobbies {
     display:flex;
@@ -186,6 +192,9 @@ header h1 {
 }
 .welcome h2 {
     font-size:40px;
+    align-items: center; /* 讓內容水平置中 */
+    justify-content: center; /* 讓內容垂直置中 */
+    text-align: center; /* 確保多行文字也置中 */
 }
 .menu {
     display:block;
@@ -200,6 +209,10 @@ header h1 {
 }
 .info {
     flex-direction: column;
+}
+.info div {
+    width:100%;
+    
 }
 .info img {
     width:100%;
