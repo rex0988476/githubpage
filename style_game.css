@@ -1,0 +1,98 @@
+* {
+    padding:0;
+    margin:0;
+}
+body {
+    background-color: #000000;
+}
+.title {
+    background-color: #4a7bca;
+    color:white;
+    height:20vh;
+    /*background-image: url("images/banner.jpg");*/
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: center;
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+} 
+.title h2 {
+    font-size:60px;
+    /*margin-top:60px;*/
+    align-items: center; /* 讓內容水平置中 */
+    justify-content: center; /* 讓內容垂直置中 */
+    text-align: center; /* 確保多行文字也置中 */
+}
+.gamelist {
+    background-color: #ede9db;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 50px 0;
+    height:60vh;
+}
+.gamelist ul {
+    list-style-type: none;
+    text-align: left;
+    padding-left: 20px;
+}
+.gamelist li {
+    color: #2f3336;
+    font-size: 24px; /* 調整字體大小 (30)*/
+    margin-bottom: 25px; /* 減少行距 (30)*/
+}
+.game {
+    display: flex;
+    justify-content: space-between; /* 讓遊戲名稱和狀態分開 */
+    width: 400px; /* 控制寬度 */
+}
+.status {
+    font-weight: bold;
+}
+
+.active {
+    color: green;
+}
+
+.semi-active {
+    color: orange;
+}
+
+.no {
+    color: gray;
+}
+footer {
+    background-color:#000000;
+    color:#B7B7B7;
+    height:60px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+/* 響應式設計語法 */
+@media screen and (max-width: 768px) {
+header ul {
+    display:none;
+}
+header h1 {
+    left:50%;
+    transform: translateX(-50%);
+}
+.title h2 {
+    font-size:40px;
+    align-items: center; /* 讓內容水平置中 */
+    justify-content: center; /* 讓內容垂直置中 */
+    text-align: center; /* 確保多行文字也置中 */
+}
+.game {
+    width: 300px; /* 控制寬度 */
+}
+.gamelist li {
+    color: #2f3336;
+    font-size: 20px; /* 調整字體大小 (30)*/
+    margin-bottom: 20px; /* 減少行距 (30)*/
+}
+}
