@@ -36,7 +36,6 @@ body {
 .gamelist ul {
     list-style-type: none;
     text-align: left;
-    padding-left: 20px;
 }
 .gamelist li {
     color: #2f3336;
