@@ -81,15 +81,32 @@ footer {
     color: white;
 }
 
+/* 設定動畫列表為橫向排列 */
+.anime-container {
+    display: flex;  /* 讓動畫卡片橫向排列 */
+    flex-wrap: wrap; /* 超出畫面時換行 */
+    gap: 20px; /* 設定間距 */
+    justify-content: left; /* 靠左排列 */
+}
+
 /* 讓作品區塊保持固定高度，防止動畫展開時變化 */
 .anime-item {
     display: flex;
-    align-items: stretch;
+    align-items: stretch;/* **讓內容高度填滿父容器** */
     border-radius: 20px;
-    transition: all 0.3s ease-in-out;
-    margin-bottom: 40px;
-    position: relative;
+    transition: all 0.3s ease-in-out;/* **動畫效果** */
+    margin-bottom: 40px;/* **底部間距** */
+    position: relative;/* **設定相對位置** */
     min-height: 268px; /* **確保區塊高度始終不變** */
+    gap: 50px; /* **設定內容間距** */
+    flex-wrap: wrap;/* **當畫面不夠時換行** */
+    margin: 0 15px; /* 左右間距 */
+}
+
+/* 當動畫被點擊時，動畫列表改成縱向排列 */
+.anime-container.vertical {
+    flex-direction: column;
+    align-items: stretch;
 }
 
 /* 左側封面（保持圓角一致） */

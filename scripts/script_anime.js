@@ -55,7 +55,11 @@ document.querySelectorAll(".order-btn").forEach(button => {
     button.addEventListener("click", function () {
         const orderType = this.getAttribute("data-order");
         const container = document.getElementById("id_container");
+        let activeItems = document.querySelectorAll(".anime-item.active"); // 獲取所有帶 active 的元素
+        let activeIds = Array.from(activeItems).map(item => item.id); // 取得所有 id
+
         container.innerHTML = ""; // 清空容器
+
         let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
         // **取得當前 Sort 的按鈕**
         const activeSortBtn = document.querySelector(".sort-btn.active");
@@ -77,7 +81,7 @@ document.querySelectorAll(".order-btn").forEach(button => {
                 sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
             }
         }
-        printAnimes(sortedData);
+        printAnimes(sortedData, activeIds);
     });
 });
 
@@ -86,7 +90,11 @@ document.querySelectorAll(".sort-btn").forEach(button => {
     button.addEventListener("click", function () {
         const sortType = this.getAttribute("data-sort");
         const container = document.getElementById("id_container");
+        let activeItems = document.querySelectorAll(".anime-item.active"); // 獲取所有帶 active 的元素
+        let activeIds = Array.from(activeItems).map(item => item.id); // 取得所有 id
+
         container.innerHTML = ""; // 清空容器
+        
         let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
         // **取得當前 Order 的按鈕**
         const activeOrderBtn = document.querySelector(".order-btn.active");
@@ -110,7 +118,7 @@ document.querySelectorAll(".sort-btn").forEach(button => {
             }
         }
         
-        printAnimes(sortedData);
+        printAnimes(sortedData, activeIds);
     });
 });
 
@@ -219,7 +227,7 @@ function fetchExcel() {
         .catch(error => console.error("讀取 Excel 失敗", error));
     }
 
-function printAnimes(animes) {
+function printAnimes(animes, active_ids_array=[]) {
     //var seasons_name = ["第一季", "第二季", "第三季", "第四季", "第五季", "第六季", "第七季", "第八季", "第九季", "第十季"];
     var seasons_name = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"];
     /*var year_name = "年份";
@@ -245,7 +253,12 @@ function printAnimes(animes) {
     
     while(i<animes.length){
         //單個作品區塊（可複製多個）
-        s_container_start = "<div class=\"anime-item active\">";
+        if (active_ids_array.includes(animes[i].id.toString())){
+            s_container_start = "<div id=\""+animes[i].id+"\" class=\"anime-item active\">";
+        }
+        else{
+            s_container_start = "<div id=\""+animes[i].id+"\" class=\"anime-item\">";
+        }
         //左側作品封面（可點擊）
         s_cover = "<div class=\"cover\" onclick=\"toggleAnimeInfo("+i.toString()+")\">" + "<img src=\""+animes[i].img_link+"\" alt=\"作品"+(i+1).toString()+"封面\">" + "</div>";
         //右側動畫資訊表格（初始隱藏）
@@ -334,6 +347,7 @@ function toggleAnimeInfo(index) {
     let animeItem = document.querySelectorAll(".anime-item")[index];
     let animeInfo = document.querySelectorAll(".anime-info")[index];
     let cover = document.querySelectorAll(".cover")[index];
+    let animeContainer = document.querySelector(".anime-container");
 
     animeItem.classList.toggle("active");
 
@@ -354,5 +368,12 @@ function toggleAnimeInfo(index) {
             animeInfo.style.display = "none";
             animeInfo.style.height = "100%"; // **確保收回時仍然等高**
         }, 300);
+    }
+    // **檢查有沒有 active 的動畫**
+    let anyActive = document.querySelector(".anime-item.active");
+    if (anyActive) {
+        animeContainer.classList.add("vertical"); // **變成縱向排列**
+    } else {
+        animeContainer.classList.remove("vertical"); // **恢復橫向排列**
     }
 }
