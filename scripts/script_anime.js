@@ -376,4 +376,15 @@ function toggleAnimeInfo(index) {
     } else {
         animeContainer.classList.remove("vertical"); // **恢復橫向排列**
     }
+
+    // **讓展開的動畫滾動到畫面中央**
+    if (animeItem.classList.contains("active")) {
+        setTimeout(() => {
+            animeItem.scrollIntoView({
+                behavior: "smooth",  // 平滑滾動
+                block: "center",      // 對齊畫面中央
+            });
+        }, 300); // 確保動畫展開後再滾動
+    }
+    
 }
