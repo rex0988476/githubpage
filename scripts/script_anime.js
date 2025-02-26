@@ -247,7 +247,7 @@ function fetchExcel() {
                 j++;
             }
             calculate_all_season();
-            sortedData = sortAnimeData();
+            sortedData = sortAnimeData(default_sort_type,default_order_type);
             //activeIds = getActiveAnimeID();
             printAnimes(sortedData);
         })
