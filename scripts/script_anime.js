@@ -13,7 +13,7 @@ class Anime{
         this.all_season_unwatched_episode = 0;/*所有季總集數-所有季看過的集數*/
         this.all_season_total_episodes = 0;/*所有季總集數*/
     }
-    addInfo(year, watched, total, date_start, date_end, score){
+    addInfo(year, watched, total, score){
         /*
         //season: 1~n, int, 第x季
         year: 西元年, int, 年份
@@ -23,7 +23,7 @@ class Anime{
         date_end: "xx/xx", str, 結束播放日期
         score: 1.0~10, str, 評分
         */
-        this.info.push({year: year, watched: watched, total: total, date_start: date_start, date_end: date_end, score: score});
+        this.info.push({year: year, watched: watched, total: total, score: score});
     }
 }
 var ANIMES = [];
@@ -205,23 +205,21 @@ function fetchExcel() {
             //document.write(img_names);
             //get anime(第一個工作表)
             /*
-            A row: id, start at A8, godown, interval=6, end at the first empty cell
-            B row: anime name, start at B8, godown, interval=6, end at the first empty cell
+            A row: id, start at A8, godown, interval=4, end at the first empty cell
+            B row: anime name, start at B8, godown, interval=4, end at the first empty cell
             C~L row: 
-            -year: start at C~L8, godown, interval=6, end at the first empty cell
-            -watched: start at C~L9, godown, interval=6, end at the first empty cell
-            -total: start at C~L10, godown, interval=6, end at the first empty cell
-            -date_start: start at C~L11, godown, interval=6, end at the first empty cell
-            -date_end: start at C~L12, godown, interval=6, end at the first empty cell
-            -score: start at C~L13, godown, interval=6, end at the first empty cell
-            M row: total_score, start at M8, godown, interval=6, end at the first empty cell
-            N row: types, start at N8, godown, interval=6, end at the first empty cell
+            -year: start at C~L8, godown, interval=4, end at the first empty cell
+            -watched: start at C~L9, godown, interval=4, end at the first empty cell
+            -total: start at C~L10, godown, interval=4, end at the first empty cell
+            -score: start at C~L11, godown, interval=4, end at the first empty cell
+            M row: total_score, start at M8, godown, interval=4, end at the first empty cell
+            N row: types, start at N8, godown, interval=4, end at the first empty cell
             */
             var sheetName = workbook.SheetNames[0]; // 取得第一個工作表名稱
             var sheet_anime_info = workbook.Sheets[sheetName];// 取得第一個工作表    
             
-            var anime_interval = 6;
-            var sheet_anime_info_start_row = 8;
+            var anime_interval = 4;
+            var sheet_anime_info_start_row = 6;
             var sheet_anime_info_seasons_start_char = 'C';
 
             var id = 0;
@@ -233,8 +231,6 @@ function fetchExcel() {
             var year = 0;
             var watched = 0;
             var total = 0;
-            var date_start = "";
-            var date_end = "";
             var score = 0;
             var title_row_colspan=0;//this.info.length+2;
             var type_row_colspan=0;//this.info.length+1;
@@ -256,15 +252,13 @@ function fetchExcel() {
                     year = sheet_anime_info[seasons_char+i.toString()].v;
                     watched = sheet_anime_info[seasons_char+(i+1).toString()].v;
                     total = sheet_anime_info[seasons_char+(i+2).toString()].v;
-                    date_start = sheet_anime_info[seasons_char+(i+3).toString()].v;
-                    date_end = sheet_anime_info[seasons_char+(i+4).toString()].v;
-                    if (!(sheet_anime_info[seasons_char+(i+5).toString()] && sheet_anime_info[seasons_char+(i+5).toString()].v && sheet_anime_info[seasons_char+(i+5).toString()].v.toString().trim() !== "")){
+                    if (!(sheet_anime_info[seasons_char+(i+3).toString()] && sheet_anime_info[seasons_char+(i+3).toString()].v && sheet_anime_info[seasons_char+(i+3).toString()].v.toString().trim() !== "")){
                         score = "";
                     }
                     else{
-                        score = sheet_anime_info[seasons_char+(i+5).toString()].v;
+                        score = sheet_anime_info[seasons_char+(i+3).toString()].v;
                     }
-                    ANIMES[ANIMES.length-1].addInfo(year, watched, total, date_start, date_end, score);
+                    ANIMES[ANIMES.length-1].addInfo(year, watched, total, score);
                     k++;
                     seasons_char = String.fromCharCode(sheet_anime_info_seasons_start_char.charCodeAt(0) + k);
                 }
@@ -298,7 +292,6 @@ function printAnimes(animes, active_ids_array=[]) {
     */
     var year_name = "Year";
     var watched_total_name = "Progress";
-    var release_date_name = "Release Date";
     var score_name = "Rate";
     var type_name = "Types";
     var total_score_name = "Total Rate";
@@ -348,7 +341,7 @@ function printAnimes(animes, active_ids_array=[]) {
             j++;
         }
         //迴圈end
-        s_anime_info += "<td class=\"fixed-width\" rowspan=\"4\">"+animes[i].total_score.toString()+" / 10</td>";
+        s_anime_info += "<td class=\"fixed-width\" rowspan=\"3\">"+animes[i].total_score.toString()+" / 10</td>";
         s_anime_info += "</tr>";
         //看過的集數 / 總集數
         s_anime_info += "<tr>";
@@ -357,17 +350,6 @@ function printAnimes(animes, active_ids_array=[]) {
         j=0;
         while(j<animes[i].info.length){
             s_anime_info += "<td>"+animes[i].info[j].watched.toString()+" / "+animes[i].info[j].total.toString()+"</td>";
-            j++;
-        }
-        //迴圈end
-        s_anime_info += "</tr>";
-        //播放日期
-        s_anime_info += "<tr>";
-        s_anime_info += "<td>"+release_date_name+"</td>";
-        //迴圈
-        j=0;
-        while(j<animes[i].info.length){
-            s_anime_info += "<td>"+animes[i].info[j].date_start+" - "+animes[i].info[j].date_end+"</td>";
             j++;
         }
         //迴圈end
