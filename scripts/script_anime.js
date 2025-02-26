@@ -23,6 +23,8 @@ class Anime{
     }
 }
 var ANIMES = [];
+//console.log("當前視窗寬度:", window.innerWidth);
+//console.log("當前視窗高度:", window.innerHeight);
 
 document.addEventListener("DOMContentLoaded", function () {
     const sortButtons = document.querySelectorAll(".sort-btn");
@@ -386,5 +388,5 @@ function toggleAnimeInfo(index) {
             });
         }, 300); // 確保動畫展開後再滾動
     }
-    
+
 }
