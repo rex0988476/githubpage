@@ -41,16 +41,16 @@ footer {
 }
 .anime-config {
     background-color: #9996e3;
-    display: flex;
-    align-items: center;  /* 讓內容垂直置中 */
-    justify-content: center; /* 讓內容垂直置中 */
-    gap: 20px;  /* 設定間距 */
-    flex-wrap: wrap; /* 如果螢幕寬度不夠，自動換行 */
+    /*display: flex;*//* 讓內容橫向排列 */
+    align-items: left;  /* 讓內容垂直置中 */
+    /*justify-content: center; /* 讓內容垂直置中 */
+    /*flex-wrap: wrap; /* 如果螢幕寬度不夠，自動換行 */
+    flex-direction: column; /* 讓內容垂直排列 */
 }
 .sort-container, .order-container {
     display: flex;
     align-items: center;
-    justify-content: center; /* 讓內容垂直置中 */
+    
     gap: 15px;
     padding: 10px;
 }

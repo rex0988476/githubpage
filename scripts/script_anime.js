@@ -6,8 +6,12 @@ class Anime{
         this.total_score = total_score;
         this.types = types;
         this.info = [];
+
         this.title_row_colspan = 0;//this.info.length+2;
         this.type_row_colspan = 0;//this.info.length+1;
+
+        this.all_season_unwatched_episode = 0;/*所有季總集數-所有季看過的集數*/
+        this.all_season_total_episodes = 0;/*所有季總集數*/
     }
     addInfo(year, watched, total, date_start, date_end, score){
         /*
@@ -27,8 +31,8 @@ var ANIMES = [];
 //console.log("當前視窗高度:", window.innerHeight);
 
 document.addEventListener("DOMContentLoaded", function () {
-    const sortButtons = document.querySelectorAll(".sort-btn");
-    const orderButtons = document.querySelectorAll(".order-btn");
+    var sortButtons = document.querySelectorAll(".sort-btn");
+    var orderButtons = document.querySelectorAll(".order-btn");
     
     // 設定預設按鈕 (Sort Default & Order Ascending)
     document.querySelector(".sort-btn[data-sort='totalRate']").classList.add("active");
@@ -55,34 +59,9 @@ document.addEventListener("DOMContentLoaded", function () {
 // 升降序
 document.querySelectorAll(".order-btn").forEach(button => {
     button.addEventListener("click", function () {
-        const orderType = this.getAttribute("data-order");
-        const container = document.getElementById("id_container");
-        let activeItems = document.querySelectorAll(".anime-item.active"); // 獲取所有帶 active 的元素
-        let activeIds = Array.from(activeItems).map(item => item.id); // 取得所有 id
-
-        container.innerHTML = ""; // 清空容器
-
-        let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
-        // **取得當前 Sort 的按鈕**
-        const activeSortBtn = document.querySelector(".sort-btn.active");
-        const activeSortType = activeSortBtn ? activeSortBtn.getAttribute("data-sort") : default_sort_type;
-        if (orderType === "ascending") {
-            if (activeSortType === "totalRate") {
-                sortedData.sort((a, b) => a.total_score - b.total_score);
-            } else if (activeSortType === "firstYear") {
-                sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
-            } else if (activeSortType === "lastYear") {
-                sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
-            }
-        } else if (orderType === "descending") {
-            if (activeSortType === "totalRate") {
-                sortedData.sort((a, b) => b.total_score - a.total_score);
-            } else if (activeSortType === "firstYear") {
-                sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
-            } else if (activeSortType === "lastYear") {
-                sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
-            }
-        }
+        var order_type = this.getAttribute("data-order");
+        sortedData = sortAnimeData("",order_type);
+        activeIds = getActiveAnimeID();
         printAnimes(sortedData, activeIds);
     });
 });
@@ -90,36 +69,9 @@ document.querySelectorAll(".order-btn").forEach(button => {
 // 按鈕排序功能
 document.querySelectorAll(".sort-btn").forEach(button => {
     button.addEventListener("click", function () {
-        const sortType = this.getAttribute("data-sort");
-        const container = document.getElementById("id_container");
-        let activeItems = document.querySelectorAll(".anime-item.active"); // 獲取所有帶 active 的元素
-        let activeIds = Array.from(activeItems).map(item => item.id); // 取得所有 id
-
-        container.innerHTML = ""; // 清空容器
-        
-        let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
-        // **取得當前 Order 的按鈕**
-        const activeOrderBtn = document.querySelector(".order-btn.active");
-        const activeOrderType = activeOrderBtn ? activeOrderBtn.getAttribute("data-order") : default_order_type;
-        if (activeOrderType === "ascending") {
-            if (sortType === "totalRate") {
-                sortedData.sort((a, b) => a.total_score - b.total_score);
-            } else if (sortType === "firstYear") {
-                sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
-            } else if (sortType === "lastYear") {
-                sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
-            }
-        }
-        else if (activeOrderType === "descending") {
-            if (sortType === "totalRate") {
-                sortedData.sort((a, b) => b.total_score - a.total_score);
-            } else if (sortType === "firstYear") {
-                sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
-            } else if (sortType === "lastYear") {
-                sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
-            }
-        }
-        
+        var sort_type = this.getAttribute("data-sort");
+        sortedData = sortAnimeData(sort_type,"");
+        activeIds = getActiveAnimeID();
         printAnimes(sortedData, activeIds);
     });
 });
@@ -128,30 +80,75 @@ document.addEventListener("DOMContentLoaded", function() {
     fetchExcel(); // 當頁面 DOM 載入後，自動讀取 Excel
 });
 
+function calculate_all_season(){
+    var i=0;
+    var j=0;
+    while (i<ANIMES.length){
+        j=0;
+        while (j<ANIMES[i].info.length){
+            ANIMES[i].all_season_unwatched_episode += ANIMES[i].info[j].total - ANIMES[i].info[j].watched;
+            ANIMES[i].all_season_total_episodes += ANIMES[i].info[j].total;
+            j++;
+        }
+        i++;
+    }
+}
+
 default_sort_type = "totalRate";
 default_order_type = "descending";   
-function init_sort(){
+function sortAnimeData(sort_type, order_type) {
     let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
-    if (default_order_type === "ascending") {
-        if (default_sort_type === "totalRate") {
+    // **取得當前 Sort 的按鈕**
+    if (sort_type === ""){
+        var activeSortBtn = document.querySelector(".sort-btn.active");
+        var activeSortType = activeSortBtn ? activeSortBtn.getAttribute("data-sort") : default_sort_type;
+    }
+    else{
+        var activeSortType = sort_type;
+    }
+    // **取得當前 Order 的按鈕**
+    if (order_type === ""){
+        var activeOrderBtn = document.querySelector(".order-btn.active");
+        var activeOrderType = activeOrderBtn ? activeOrderBtn.getAttribute("data-order") : default_order_type;
+    }
+    else{
+        var activeOrderType = order_type;
+    }
+    if (activeOrderType === "ascending") {
+        if (activeSortType === "totalRate") {
             sortedData.sort((a, b) => a.total_score - b.total_score);
-        } else if (default_sort_type === "firstYear") {
+        } else if (activeSortType === "firstYear") {
             sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
-        } else if (default_sort_type === "lastYear") {
+        } else if (activeSortType === "lastYear") {
             sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
+        } else if (activeSortType === "progress") {
+            sortedData.sort((a, b) => b.all_season_unwatched_episode - a.all_season_unwatched_episode);
+        } else if (activeSortType === "totalEpisodes") {
+            sortedData.sort((a, b) => a.all_season_total_episodes - b.all_season_total_episodes);
         }
     }
-    else if (default_order_type === "descending") {
-        if (default_sort_type === "totalRate") {
+    else if (activeOrderType === "descending") {
+        if (activeSortType === "totalRate") {
             sortedData.sort((a, b) => b.total_score - a.total_score);
-        } else if (default_sort_type === "firstYear") {
+        } else if (activeSortType === "firstYear") {
             sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
-        } else if (default_sort_type === "lastYear") {
+        } else if (activeSortType === "lastYear") {
             sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
+        } else if (activeSortType === "progress") {
+            sortedData.sort((a, b) => a.all_season_unwatched_episode - b.all_season_unwatched_episode);
+        } else if (activeSortType === "totalEpisodes") {
+            sortedData.sort((a, b) => b.all_season_total_episodes - a.all_season_total_episodes);
         }
     }
     return sortedData;
 }
+
+function getActiveAnimeID() {
+    let activeItems = document.querySelectorAll(".anime-item.active"); // 獲取所有帶 active 的元素
+    let activeIds = Array.from(activeItems).map(item => item.id); // 取得所有 id
+    return activeIds;
+}
+
 
 function fetchExcel() {
     //var url = "https://raw.githubusercontent.com/rex0988476/test/main/data.xlsx";
@@ -249,13 +246,18 @@ function fetchExcel() {
                 i+=anime_interval;
                 j++;
             }
-            sortedData = init_sort();
+            calculate_all_season();
+            sortedData = sortAnimeData();
+            //activeIds = getActiveAnimeID();
             printAnimes(sortedData);
         })
         .catch(error => console.error("讀取 Excel 失敗", error));
     }
 
 function printAnimes(animes, active_ids_array=[]) {
+    var container = document.getElementById("id_container");
+    container.innerHTML = ""; // 清空容器
+
     //var seasons_name = ["第一季", "第二季", "第三季", "第四季", "第五季", "第六季", "第七季", "第八季", "第九季", "第十季"];
     var seasons_name = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"];
     /*var year_name = "年份";
