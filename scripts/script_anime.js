@@ -30,6 +30,30 @@ var ANIMES = [];
 //console.log("當前視窗寬度:", window.innerWidth);
 //console.log("當前視窗高度:", window.innerHeight);
 
+// 展開全部anime
+const expandButton = document.querySelector(".expand-btn");
+expandButton.addEventListener("click", function () {
+    inactiveIds = getInactiveAnimeID();
+    var i=0;
+    while(i<inactiveIds.length){
+        toggleAnimeInfo(inactiveIds[i]);
+        i++;
+    }
+});
+
+// 收合全部anime
+const collapseButton = document.querySelector(".collapse-btn");
+collapseButton.addEventListener("click", function () {
+    activeIds = getActiveAnimeID();
+    var i=0;
+    while(i<activeIds.length){
+        toggleAnimeInfo(activeIds[i]);
+        i++;
+    }
+});
+
+// 
+
 document.addEventListener("DOMContentLoaded", function () {
     var sortButtons = document.querySelectorAll(".sort-btn");
     var orderButtons = document.querySelectorAll(".order-btn");
@@ -54,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
 
 // 升降序
 document.querySelectorAll(".order-btn").forEach(button => {
@@ -147,6 +170,12 @@ function getActiveAnimeID() {
     let activeItems = document.querySelectorAll(".anime-item.active"); // 獲取所有帶 active 的元素
     let activeIds = Array.from(activeItems).map(item => item.id); // 取得所有 id
     return activeIds;
+}
+
+function getInactiveAnimeID() {
+    let inactiveItems = document.querySelectorAll(".anime-item:not(.active)"); // 獲取所有不帶 active 的元素
+    let inactiveIds = Array.from(inactiveItems).map(item => item.id); // 取得所有 id
+    return inactiveIds;
 }
 
 
@@ -280,17 +309,17 @@ function printAnimes(animes, active_ids_array=[]) {
     var s_container_end="";
     var s_cover="";
     var s_anime_info="";
-    
+    //id on html is "anime_{id}"
     while(i<animes.length){
         //單個作品區塊（可複製多個）
         if (active_ids_array.includes(animes[i].id.toString())){
-            s_container_start = "<div id=\""+animes[i].id+"\" class=\"anime-item active\">";
+            s_container_start = "<div id=\"anime_"+animes[i].id+"\" class=\"anime-item active\">";
         }
         else{
-            s_container_start = "<div id=\""+animes[i].id+"\" class=\"anime-item\">";
+            s_container_start = "<div id=\"anime_"+animes[i].id+"\" class=\"anime-item\">";
         }
         //左側作品封面（可點擊）
-        s_cover = "<div class=\"cover\" onclick=\"toggleAnimeInfo("+i.toString()+")\">" + "<img src=\""+animes[i].img_link+"\" alt=\"作品"+(i+1).toString()+"封面\">" + "</div>";
+        s_cover = "<div class=\"cover\" onclick=\"toggleAnimeInfo(\'anime_"+animes[i].id.toString()+"\')\">" + "<img src=\""+animes[i].img_link+"\" alt=\"作品"+(i+1).toString()+"封面\">" + "</div>";
         //右側動畫資訊表格（初始隱藏）
         s_anime_info = "<div class=\"anime-info\">" + "<table class=\"anime-table\">";
         //動畫名稱
@@ -373,15 +402,18 @@ function printAnimes(animes, active_ids_array=[]) {
         i++;
     }
 }
-function toggleAnimeInfo(index) {
-    let animeItem = document.querySelectorAll(".anime-item")[index];
-    let animeInfo = document.querySelectorAll(".anime-info")[index];
-    let cover = document.querySelectorAll(".cover")[index];
+function toggleAnimeInfo(id) {
+    //let animeItem = document.querySelectorAll(".anime-item")[index];
+    //let animeInfo = document.querySelectorAll(".anime-info")[index];
+    //let cover = document.querySelectorAll(".cover")[index];
+    let animeItem = document.getElementById(id);
+    let animeInfo = document.querySelector(`#${id} .anime-info`);
+    let cover = document.querySelector(`#${id} .cover`);
     let animeContainer = document.querySelector(".anime-container");
 
     animeItem.classList.toggle("active");
 
-    if (animeItem.classList.contains("active")) {
+    if (animeItem.classList.contains("active")) {//展開
         animeInfo.style.visibility = "hidden";
         animeInfo.style.display = "flex";
 
@@ -392,7 +424,7 @@ function toggleAnimeInfo(index) {
             animeInfo.style.height = `${coverHeight}px`; // **確保高度與封面一致**
             animeInfo.style.visibility = "visible";
         }, 10);
-    } else {
+    } else {//收合
         animeInfo.style.width = "0";
         setTimeout(() => {
             animeInfo.style.display = "none";

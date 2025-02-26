@@ -47,7 +47,7 @@ footer {
     /*flex-wrap: wrap; /* 如果螢幕寬度不夠，自動換行 */
     flex-direction: column; /* 讓內容垂直排列 */
 }
-.sort-container, .order-container {
+.sort-container, .order-container, .expand-collapse-container {
     display: flex;
     align-items: center;
     
@@ -60,7 +60,7 @@ footer {
     font-size: 20px;
 }
 
-.sort-btn, .order-btn {
+.sort-btn, .order-btn, .expand-btn, .collapse-btn {
     background-color: #ede9db;
     color: black;
     border: none;
@@ -70,7 +70,7 @@ footer {
     font-size: 18px;
 }
 
-.sort-btn:hover, .order-btn:hover {
+.sort-btn:hover, .order-btn:hover, .expand-btn:hover, .collapse-btn:hover {
     background-color: #4a7bca;
     color: white;
 }
