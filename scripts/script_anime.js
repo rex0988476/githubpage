@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const orderButtons = document.querySelectorAll(".order-btn");
     
     // 設定預設按鈕 (Sort Default & Order Ascending)
-    document.querySelector(".sort-btn[data-sort='default']").classList.add("active");
-    document.querySelector(".order-btn[data-order='ascending']").classList.add("active");
+    document.querySelector(".sort-btn[data-sort='totalRate']").classList.add("active");
+    document.querySelector(".order-btn[data-order='descending']").classList.add("active");
 
     // 讓 Sort 類別的按鈕，確保只有一個是 active
     sortButtons.forEach(button => {
@@ -59,7 +59,7 @@ document.querySelectorAll(".order-btn").forEach(button => {
         let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
         // **取得當前 Sort 的按鈕**
         const activeSortBtn = document.querySelector(".sort-btn.active");
-        const activeSortType = activeSortBtn ? activeSortBtn.getAttribute("data-sort") : "default";
+        const activeSortType = activeSortBtn ? activeSortBtn.getAttribute("data-sort") : "totalRate";
         if (orderType === "ascending") {
             if (activeSortType === "totalRate") {
                 sortedData.sort((a, b) => a.total_score - b.total_score);
@@ -67,8 +67,6 @@ document.querySelectorAll(".order-btn").forEach(button => {
                 sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
             } else if (activeSortType === "lastYear") {
                 sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
-            } else {
-                sortedData = ANIMES; // 預設順序
             }
         } else if (orderType === "descending") {
             if (activeSortType === "totalRate") {
@@ -77,8 +75,6 @@ document.querySelectorAll(".order-btn").forEach(button => {
                 sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
             } else if (activeSortType === "lastYear") {
                 sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
-            } else {
-                sortedData = [...ANIMES].reverse(); // 預設順序
             }
         }
         printAnimes(sortedData);
@@ -94,7 +90,7 @@ document.querySelectorAll(".sort-btn").forEach(button => {
         let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
         // **取得當前 Order 的按鈕**
         const activeOrderBtn = document.querySelector(".order-btn.active");
-        const activeOrderType = activeOrderBtn ? activeOrderBtn.getAttribute("data-order") : "acending";
+        const activeOrderType = activeOrderBtn ? activeOrderBtn.getAttribute("data-order") : "descending";
         if (activeOrderType === "ascending") {
             if (sortType === "totalRate") {
                 sortedData.sort((a, b) => a.total_score - b.total_score);
@@ -102,8 +98,6 @@ document.querySelectorAll(".sort-btn").forEach(button => {
                 sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
             } else if (sortType === "lastYear") {
                 sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
-            } else {
-                sortedData = ANIMES; // 預設順序
             }
         }
         else if (activeOrderType === "descending") {
@@ -113,8 +107,6 @@ document.querySelectorAll(".sort-btn").forEach(button => {
                 sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
             } else if (sortType === "lastYear") {
                 sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
-            } else {
-                sortedData = [...ANIMES].reverse(); // 預設順序
             }
         }
         
