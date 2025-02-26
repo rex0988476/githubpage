@@ -65,7 +65,7 @@ document.querySelectorAll(".order-btn").forEach(button => {
         let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
         // **取得當前 Sort 的按鈕**
         const activeSortBtn = document.querySelector(".sort-btn.active");
-        const activeSortType = activeSortBtn ? activeSortBtn.getAttribute("data-sort") : "totalRate";
+        const activeSortType = activeSortBtn ? activeSortBtn.getAttribute("data-sort") : default_sort_type;
         if (orderType === "ascending") {
             if (activeSortType === "totalRate") {
                 sortedData.sort((a, b) => a.total_score - b.total_score);
@@ -100,7 +100,7 @@ document.querySelectorAll(".sort-btn").forEach(button => {
         let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
         // **取得當前 Order 的按鈕**
         const activeOrderBtn = document.querySelector(".order-btn.active");
-        const activeOrderType = activeOrderBtn ? activeOrderBtn.getAttribute("data-order") : "descending";
+        const activeOrderType = activeOrderBtn ? activeOrderBtn.getAttribute("data-order") : default_order_type;
         if (activeOrderType === "ascending") {
             if (sortType === "totalRate") {
                 sortedData.sort((a, b) => a.total_score - b.total_score);
@@ -127,6 +127,31 @@ document.querySelectorAll(".sort-btn").forEach(button => {
 document.addEventListener("DOMContentLoaded", function() {
     fetchExcel(); // 當頁面 DOM 載入後，自動讀取 Excel
 });
+
+default_sort_type = "totalRate";
+default_order_type = "descending";   
+function init_sort(){
+    let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
+    if (default_order_type === "ascending") {
+        if (default_sort_type === "totalRate") {
+            sortedData.sort((a, b) => a.total_score - b.total_score);
+        } else if (default_sort_type === "firstYear") {
+            sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
+        } else if (default_sort_type === "lastYear") {
+            sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
+        }
+    }
+    else if (default_order_type === "descending") {
+        if (default_sort_type === "totalRate") {
+            sortedData.sort((a, b) => b.total_score - a.total_score);
+        } else if (default_sort_type === "firstYear") {
+            sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
+        } else if (default_sort_type === "lastYear") {
+            sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
+        }
+    }
+    return sortedData;
+}
 
 function fetchExcel() {
     //var url = "https://raw.githubusercontent.com/rex0988476/test/main/data.xlsx";
@@ -224,7 +249,8 @@ function fetchExcel() {
                 i+=anime_interval;
                 j++;
             }
-            printAnimes(ANIMES);
+            sortedData = init_sort();
+            printAnimes(sortedData);
         })
         .catch(error => console.error("讀取 Excel 失敗", error));
     }
