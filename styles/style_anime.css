@@ -1,0 +1,212 @@
+* {
+    padding:0;
+    margin:0;
+}
+body {
+    background-color: #000000;
+}
+.title {
+    background-color: #4a7bca;
+    color:white;
+    height:20vh;
+    /*background-image: url("images/banner.jpg");*/
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-position: center;
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+} 
+.title h2 {
+    font-size:60px;
+    /*margin-top:60px;*/
+    align-items: center; /* 讓內容水平置中 */
+    justify-content: center; /* 讓內容垂直置中 */
+    text-align: center; /* 確保多行文字也置中 */
+}
+.anime-field {
+    background-color: #ede9db;
+    padding: 50px;  /* 增加內邊距 */
+}
+
+footer {
+    background-color:#000000;
+    color:#B7B7B7;
+    height:60px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+.anime-config {
+    background-color: #9996e3;
+    display: flex;
+    align-items: center;  /* 讓內容垂直置中 */
+    justify-content: center; /* 讓內容垂直置中 */
+    gap: 20px;  /* 設定間距 */
+    flex-wrap: wrap; /* 如果螢幕寬度不夠，自動換行 */
+}
+.sort-container, .order-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 讓內容垂直置中 */
+    gap: 15px;
+    padding: 10px;
+}
+
+.sort-container label, .order-container label {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.sort-btn, .order-btn {
+    background-color: #ede9db;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.sort-btn:hover, .order-btn:hover {
+    background-color: #4a7bca;
+    color: white;
+}
+
+/* 當按鈕被點擊時，顏色改變 */
+.sort-btn.active, .order-btn.active {
+    background-color: #4a7bca; /* 深藍色 */
+    color: white;
+}
+
+/* 讓作品區塊保持固定高度，防止動畫展開時變化 */
+.anime-item {
+    display: flex;
+    align-items: stretch;
+    border-radius: 20px;
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 40px;
+    position: relative;
+    min-height: 268px; /* **確保區塊高度始終不變** */
+}
+
+/* 左側封面（保持圓角一致） */
+.cover {
+    /*width: 230px;
+    height: 325px;*/
+    /*width: 150px;
+    height: 210px;*/
+    width: 188px;
+    height: 268px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2d6dc4;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s ease-in-out;
+    flex-shrink: 0;
+    border-radius: 20px; /* **確保外框有圓角** */
+    overflow: hidden; /* **避免圖片超出圓角範圍** */
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* 作品封面圖片（與藍色背景保持相同圓角） */
+.cover img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px; /* **與 .cover 一樣的圓角** */
+    object-fit: cover;
+}
+
+/* 讓動畫資訊的高度與左側封面始終一致 */
+.anime-info {
+    width: 0;
+    overflow: hidden;
+    display: none;
+    transition: width 0.3s ease-in-out;
+    background: white;
+    display: flex;
+    align-items: stretch;
+    height: 100%; /* **確保與左側封面等高** */
+    border-radius: 20px;
+    position: absolute;
+    top: 0;
+    left: 188px; /* **確保動畫資訊展開時與封面對齊** */
+}
+
+/* 展開動畫資訊時，保持高度不變 */
+.anime-item.active .anime-info {
+    width: 70%;
+    display: flex;
+    box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* 確保表格內容填滿父容器 */
+.anime-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f8f9fa;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+
+/* 讓表格內的文字有適當間距 */
+.anime-table td, .anime-table th {
+    padding: 4px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.anime-table td:first-child{
+    width: 100px; /* 你可以調整這個數值 */
+    white-space: nowrap; /* 防止文字換行 */
+}
+
+.fixed-width {
+    width: 50px;
+    white-space: nowrap;
+}
+
+/* 表格標題列（表頭部分，如「第1季、第2季、...」） */
+.anime-table th {
+    background: #b1b1b1; /* **較深的灰色，區分表頭** */
+    font-weight: bold;
+}
+/* 交錯行背景色，讓表格更清晰 */
+.anime-table tr:nth-child(even) {
+    background: #d9d9d9; /* **淺灰色背景** */
+}
+
+.anime-table tr:nth-child(odd) {
+    background: #ffffff; /* **白色背景** */
+}
+
+/* 響應式設計語法 */
+@media screen and (max-width: 768px) {
+    header ul {
+        display:none;
+    }
+    header h1 {
+        left:50%;
+        transform: translateX(-50%);
+    }
+    .title h2 {
+        font-size:40px;
+        align-items: center; /* 讓內容水平置中 */
+        justify-content: center; /* 讓內容垂直置中 */
+        text-align: center; /* 確保多行文字也置中 */
+    }
+    .game {
+        width: 300px; /* 控制寬度 */
+    }
+    .gamelist li {
+        color: #2f3336;
+        font-size: 20px; /* 調整字體大小 (30)*/
+        margin-bottom: 20px; /* 減少行距 (30)*/
+    }
+    }
