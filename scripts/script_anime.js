@@ -312,7 +312,7 @@ function printAnimes(animes, active_ids_array=[]) {
     //id on html is "anime_{id}"
     while(i<animes.length){
         //單個作品區塊（可複製多個）
-        if (active_ids_array.includes(animes[i].id.toString())){
+        if (active_ids_array.includes("anime_"+animes[i].id.toString())){
             s_container_start = "<div id=\"anime_"+animes[i].id+"\" class=\"anime-item active\">";
         }
         else{
