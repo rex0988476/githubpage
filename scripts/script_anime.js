@@ -1,8 +1,9 @@
 class Anime{
-    constructor(id, name, img_link, total_score, types){
+    constructor(id, name, img_link, img_name, total_score, types){
         this.id = id;
         this.name = name;
         this.img_link = img_link;
+        this.img_name = img_name;
         this.total_score = total_score;
         this.types = types;
         this.info = [];
@@ -237,6 +238,7 @@ function fetchExcel() {
             var id = 0;
             var name_ = "";
             var img_link = "";
+            var img_name = "";
             var total_score = "";
             var types = "";
 
@@ -255,6 +257,7 @@ function fetchExcel() {
                 id = sheet_anime_info["A"+i.toString()].v;
                 name_ = sheet_anime_info["B"+i.toString()].v.toString();
                 img_link = anime_img_link_root + img_names[j];
+                img_name = img_names[j].slice(0,-4);
                 total_score = sheet_anime_info["M"+i.toString()].v;
                 if (!(sheet_anime_info["N"+i.toString()] && sheet_anime_info["N"+i.toString()].v && sheet_anime_info["N"+i.toString()].v.toString().trim() !== "")){
                     types = "";
@@ -262,7 +265,7 @@ function fetchExcel() {
                 else{
                     types = sheet_anime_info["N"+i.toString()].v.toString();
                 }
-                ANIMES.push(new Anime(id, name_, img_link, total_score, types));
+                ANIMES.push(new Anime(id, name_, img_link, img_name, total_score, types));
                 k=0;
                 seasons_char = sheet_anime_info_seasons_start_char;
                 while(sheet_anime_info[seasons_char+i.toString()] && sheet_anime_info[seasons_char+i.toString()].v && sheet_anime_info[seasons_char+i.toString()].v.toString().trim() !== ""){//單元格不為 undefined、空白或純空格
@@ -329,7 +332,7 @@ function printAnimes(animes, active_ids_array=[]) {
             s_container_start = "<div id=\"anime_"+animes[i].id+"\" class=\"anime-item\">";
         }
         //左側作品封面（可點擊）
-        s_cover = "<div class=\"cover\" onclick=\"toggleAnimeInfo(\'anime_"+animes[i].id.toString()+"\')\">" + "<img src=\""+animes[i].img_link+"\" alt=\"作品"+(i+1).toString()+"封面\">" + "</div>";
+        s_cover = "<div class=\"cover\" onclick=\"toggleAnimeInfo(\'anime_"+animes[i].id.toString()+"\')\">" + "<img src=\""+animes[i].img_link+"\" alt=\""+animes[i].img_name+"\">" + "</div>";
         //右側動畫資訊表格（初始隱藏）
         s_anime_info = "<div class=\"anime-info\">" + "<table class=\"anime-table\">";
         //動畫名稱
