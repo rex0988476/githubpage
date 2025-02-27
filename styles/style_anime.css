@@ -47,7 +47,7 @@ footer {
     /*flex-wrap: wrap; /* 如果螢幕寬度不夠，自動換行 */
     flex-direction: column; /* 讓內容垂直排列 */
 }
-.sort-container, .order-container, .expand-collapse-container {
+.sort-container, .order-container, .expand-collapse-container, .view-mode-container{
     display: flex;
     align-items: center;
     
@@ -55,12 +55,12 @@ footer {
     padding: 10px;
 }
 
-.sort-container label, .order-container label {
+.sort-container label, .order-container label, .view-mode-container label {
     font-weight: bold;
     font-size: 20px;
 }
 
-.sort-btn, .order-btn, .expand-btn, .collapse-btn {
+.sort-btn, .order-btn, .expand-btn, .collapse-btn, .view-mode-card-btn, .view-mode-list-btn{
     background-color: #ede9db;
     color: black;
     border: none;
@@ -70,13 +70,13 @@ footer {
     font-size: 18px;
 }
 
-.sort-btn:hover, .order-btn:hover, .expand-btn:hover, .collapse-btn:hover {
+.sort-btn:hover, .order-btn:hover, .expand-btn:hover, .collapse-btn:hover, .view-mode-card-btn:hover, .view-mode-list-btn:hover{
     background-color: #4a7bca;
     color: white;
 }
 
 /* 當按鈕被點擊時，顏色改變 */
-.sort-btn.active, .order-btn.active {
+.sort-btn.active, .order-btn.active, .view-mode-card-btn.active, .view-mode-list-btn.active{
     background-color: #4a7bca; /* 深藍色 */
     color: white;
 }

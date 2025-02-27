@@ -61,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 設定預設按鈕 (Sort Default & Order Ascending)
     document.querySelector(".sort-btn[data-sort='totalRate']").classList.add("active");
     document.querySelector(".order-btn[data-order='descending']").classList.add("active");
+    document.querySelector(".view-mode-card-btn").classList.add("active");
 
     // 讓 Sort 類別的按鈕，確保只有一個是 active
     sortButtons.forEach(button => {
@@ -76,6 +77,17 @@ document.addEventListener("DOMContentLoaded", function () {
             orderButtons.forEach(btn => btn.classList.remove("active")); // 移除所有 active
             this.classList.add("active"); // 設定當前按鈕為 active
         });
+    });
+
+    // 切換顯示模式
+    document.querySelector(".view-mode-card-btn").addEventListener("click", function () {
+        document.querySelector(".view-mode-list-btn").classList.remove("active");
+        this.classList.add("active");
+        
+    });
+    document.querySelector(".view-mode-list-btn").addEventListener("click", function () {
+        document.querySelector(".view-mode-card-btn").classList.remove("active");
+        this.classList.add("active");
     });
 });
 
@@ -244,7 +256,12 @@ function fetchExcel() {
                 name_ = sheet_anime_info["B"+i.toString()].v.toString();
                 img_link = anime_img_link_root + img_names[j];
                 total_score = sheet_anime_info["M"+i.toString()].v;
-                types = sheet_anime_info["N"+i.toString()].v.toString();
+                if (!(sheet_anime_info["N"+i.toString()] && sheet_anime_info["N"+i.toString()].v && sheet_anime_info["N"+i.toString()].v.toString().trim() !== "")){
+                    types = "";
+                }
+                else{
+                    types = sheet_anime_info["N"+i.toString()].v.toString();
+                }
                 ANIMES.push(new Anime(id, name_, img_link, total_score, types));
                 k=0;
                 seasons_char = sheet_anime_info_seasons_start_char;
@@ -373,7 +390,12 @@ function printAnimes(animes, active_ids_array=[]) {
         //類型
         s_anime_info += "<tr>";
         s_anime_info += "<td>"+type_name+"</td>";
-        s_anime_info += "<td colspan=\""+animes[i].type_row_colspan.toString()+"\">"+animes[i].types+"</td>";
+        if (animes[i].types === ""){
+            s_anime_info += "<td colspan=\""+animes[i].type_row_colspan.toString()+"\">-</td>";
+        }
+        else{
+            s_anime_info += "<td colspan=\""+animes[i].type_row_colspan.toString()+"\">"+animes[i].types+"</td>";
+        }
         s_anime_info += "</tr>";
         s_anime_info += "</table>";
         s_anime_info += "</div>";
