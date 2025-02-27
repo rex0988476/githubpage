@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var orderButtons = document.querySelectorAll(".order-btn");
     
     // 設定預設按鈕 (Sort Default & Order Ascending)
-    document.querySelector(".sort-btn[data-sort='totalRate']").classList.add("active");
+    document.querySelector(".sort-btn[data-sort='totalScore']").classList.add("active");
     document.querySelector(".order-btn[data-order='descending']").classList.add("active");
     document.querySelector(".view-mode-card-btn").classList.add("active");
 
@@ -129,7 +129,7 @@ function calculate_all_season(){
     }
 }
 
-default_sort_type = "totalRate";
+default_sort_type = "totalScore";
 default_order_type = "descending";   
 function sortAnimeData(sort_type, order_type) {
     let sortedData = [...ANIMES]; // 複製數據，避免修改原始數據
@@ -150,7 +150,7 @@ function sortAnimeData(sort_type, order_type) {
         var activeOrderType = order_type;
     }
     if (activeOrderType === "ascending") {
-        if (activeSortType === "totalRate") {
+        if (activeSortType === "totalScore") {
             sortedData.sort((a, b) => a.total_score - b.total_score);
         } else if (activeSortType === "firstYear") {
             sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
@@ -163,7 +163,7 @@ function sortAnimeData(sort_type, order_type) {
         }
     }
     else if (activeOrderType === "descending") {
-        if (activeSortType === "totalRate") {
+        if (activeSortType === "totalScore") {
             sortedData.sort((a, b) => b.total_score - a.total_score);
         } else if (activeSortType === "firstYear") {
             sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
@@ -309,9 +309,9 @@ function printAnimes(animes, active_ids_array=[]) {
     */
     var year_name = "Year";
     var watched_total_name = "Progress";
-    var score_name = "Rate";
+    var score_name = "Score";
     var type_name = "Types";
-    var total_score_name = "Total Rate";
+    var total_score_name = "Total Score";
 
     var i=0;
     var j=0;
