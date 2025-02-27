@@ -195,8 +195,8 @@ function fetchExcel() {
     //var url = "https://raw.githubusercontent.com/rex0988476/test/main/data.xlsx";
     //var url = "data.xlsx";
     //var url = "http://localhost:8000/data.xlsx";
-    //var url = "https://raw.githubusercontent.com/rex0988476/githubpage/main/database/data_anime.xlsx";
-    var url = "../database/data_anime.xlsx";
+    var url = "https://raw.githubusercontent.com/rex0988476/githubpage/main/database/data_anime.xlsx";
+    //var url = "../database/data_anime.xlsx";
 
     fetch(url)
     //fetch(url)
