@@ -27,7 +27,7 @@ body {
 }
 .anime-field {
     background-color: #ede9db;
-    padding: 50px;  /* 增加內邊距 */
+    padding: 30px;  /* 增加內邊距 */
 }
 
 footer {
@@ -95,12 +95,12 @@ footer {
     align-items: stretch;/* **讓內容高度填滿父容器** */
     border-radius: 20px;
     transition: all 0.3s ease-in-out;/* **動畫效果** */
-    margin-bottom: 40px;/* **底部間距** */
     position: relative;/* **設定相對位置** */
-    min-height: 214px; /* **確保區塊高度始終不變** */
+    min-height: 268px; /* **確保區塊高度始終不變** */
     gap: 50px; /* **設定內容間距** */
     flex-wrap: wrap;/* **當畫面不夠時換行** */
-    margin: 0 15px; /* 左右間距 */
+    /*margin-bottom: 20px;/* **底部間距** */
+    /*margin: 0 15px; /* 左右間距 */
 }
 
 /* 當動畫被點擊時，動畫列表改成縱向排列 */
@@ -115,10 +115,8 @@ footer {
     height: 325px;*/
     /*width: 150px;
     height: 210px;*/
-    /*width: 188px;
-    height: 268px;*/
-    width: 150px;
-    height: 214px;
+    width: 188px;
+    height: 268px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -153,7 +151,7 @@ footer {
     border-radius: 20px;
     position: absolute;
     top: 0;
-    left: 150px; /* **確保動畫資訊展開時與封面對齊** */
+    left: 188px; /* **確保動畫資訊展開時與封面對齊** */
 }
 
 /* 展開動畫資訊時，保持高度不變 */
