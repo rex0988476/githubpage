@@ -383,6 +383,7 @@ function printListAnimes(animes, active_ids_array=[]) {
         row.addEventListener("click", () => toggleDetails(row, anime));
         tableBody.appendChild(row);
 
+        /* //暫不使用 手機很難消除圖片
         // 滑鼠移入：顯示圖片並更換
         row.addEventListener("mouseover", () => {
             animeImage.src = anime.img_link;
@@ -393,6 +394,7 @@ function printListAnimes(animes, active_ids_array=[]) {
         row.addEventListener("mouseleave", () => {
             animeImage.style.opacity = "0"; // 讓圖片變透明
         });
+        */
     });
 }
 
