@@ -34,7 +34,7 @@ var ANIMES = [];
 // 展開全部anime
 const expandButton = document.querySelector(".expand-btn");
 expandButton.addEventListener("click", function () {
-    inactiveIds = getInactiveAnimeID();
+    var inactiveIds = getInactiveAnimeID();
     var i=0;
     while(i<inactiveIds.length){
         toggleAnimeInfo(inactiveIds[i]);
@@ -45,7 +45,7 @@ expandButton.addEventListener("click", function () {
 // 收合全部anime
 const collapseButton = document.querySelector(".collapse-btn");
 collapseButton.addEventListener("click", function () {
-    activeIds = getActiveAnimeID();
+    var activeIds = getActiveAnimeID();
     var i=0;
     while(i<activeIds.length){
         toggleAnimeInfo(activeIds[i]);
@@ -54,7 +54,7 @@ collapseButton.addEventListener("click", function () {
 });
 
 // 
-
+var VIEWMODE = "card";
 document.addEventListener("DOMContentLoaded", function () {
     var sortButtons = document.querySelectorAll(".sort-btn");
     var orderButtons = document.querySelectorAll(".order-btn");
@@ -84,11 +84,17 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".view-mode-card-btn").addEventListener("click", function () {
         document.querySelector(".view-mode-list-btn").classList.remove("active");
         this.classList.add("active");
-        
+        VIEWMODE = "card";
+        var sortedData = sortAnimeData(default_sort_type,default_order_type);
+        printCardAnimes(sortedData);
     });
     document.querySelector(".view-mode-list-btn").addEventListener("click", function () {
         document.querySelector(".view-mode-card-btn").classList.remove("active");
         this.classList.add("active");
+        VIEWMODE = "list";
+        var sortedData = sortAnimeData(default_sort_type,default_order_type);
+        printListAnimes_init();
+        printListAnimes(sortedData);
     });
 });
 
@@ -96,9 +102,15 @@ document.addEventListener("DOMContentLoaded", function () {
 document.querySelectorAll(".order-btn").forEach(button => {
     button.addEventListener("click", function () {
         var order_type = this.getAttribute("data-order");
-        sortedData = sortAnimeData("",order_type);
-        activeIds = getActiveAnimeID();
-        printAnimes(sortedData, activeIds);
+        var sortedData = sortAnimeData("",order_type);
+        if (VIEWMODE === "card"){
+            var activeIds = getActiveAnimeID();
+            printCardAnimes(sortedData, activeIds);
+        }
+        else if (VIEWMODE === "list"){
+            printListAnimes(sortedData);
+        }
+        
     });
 });
 
@@ -106,9 +118,14 @@ document.querySelectorAll(".order-btn").forEach(button => {
 document.querySelectorAll(".sort-btn").forEach(button => {
     button.addEventListener("click", function () {
         var sort_type = this.getAttribute("data-sort");
-        sortedData = sortAnimeData(sort_type,"");
-        activeIds = getActiveAnimeID();
-        printAnimes(sortedData, activeIds);
+        var sortedData = sortAnimeData(sort_type,"");
+        if (VIEWMODE === "card"){
+            var activeIds = getActiveAnimeID();
+            printCardAnimes(sortedData, activeIds);
+        }
+        else if (VIEWMODE === "list"){
+            printListAnimes(sortedData);
+        }
     });
 });
 
@@ -290,14 +307,165 @@ function fetchExcel() {
                 j++;
             }
             calculate_all_season();
-            sortedData = sortAnimeData(default_sort_type,default_order_type);
+            var sortedData = sortAnimeData(default_sort_type,default_order_type);
             //activeIds = getActiveAnimeID();
-            printAnimes(sortedData);
+            if (VIEWMODE === "card"){
+                printCardAnimes(sortedData);
+            }
+            else if (VIEWMODE === "list"){
+                printListAnimes(sortedData);
+            }
         })
         .catch(error => console.error("讀取 Excel 失敗", error));
     }
 
-function printAnimes(animes, active_ids_array=[]) {
+function printListAnimes_init() {
+    var container = document.getElementById("id_container");
+    container.innerHTML = ""; // 清空容器
+
+    var s_container_start="";
+    var s_container_end="";
+    
+    //左側懸浮封面
+    s_container_start+="<img id=\"anime-image\" src=\"\" alt=\"Anime Cover\">";
+    //右側表格
+    s_container_start+="<table class=\"anime-list-table\">";
+    s_container_start+="<thead>";
+    s_container_start+="<tr>";
+    s_container_start+="<th>Title</th>";
+    s_container_start+="<th>Score</th>";
+    s_container_start+="<th colspan=\"2\">Progress</th>";
+    s_container_start+="</tr>";
+    s_container_start+="</thead>";
+    s_container_start+="<tbody>";
+    s_container_start+="<tbody id=\"anime-body\">";
+    //動畫資訊(s_anime_body)在此中間
+    s_container_end+="</tbody>";
+    s_container_end+="</table>";
+
+    document.getElementById("id_container").insertAdjacentHTML("beforeend",s_container_start+s_container_end);
+}
+
+function printListAnimes(animes, active_ids_array=[]) {
+    
+    const tableBody = document.getElementById("anime-body");
+    tableBody.innerHTML = "";
+    const animeImage = document.getElementById("anime-image");
+    animes.forEach((anime, index) => {
+        var i=0;
+        var is_completed = true;
+        while(i<anime.info.length){
+            if(anime.info[i].watched < anime.info[i].total){
+                is_completed = false;
+                break;
+            }
+            i++;
+        }
+
+        let row = document.createElement("tr");
+
+        if (is_completed){
+            row.innerHTML = `
+                <td>${anime.name}</td>
+                <td>${anime.total_score}</td>
+                <td colspan="2">completed</td>
+            `;
+        }
+        else{
+            row.innerHTML = `
+                <td>${anime.name}</td>
+                <td>${anime.total_score}</td>
+                <td>S${i+1}</td>
+                <td>${anime.info[i].watched.toString()} / ${anime.info[i].total.toString()}</td>
+            `;
+        }
+        
+        row.addEventListener("click", () => toggleDetails(row, anime));
+        tableBody.appendChild(row);
+
+        // 滑鼠移入：顯示圖片並更換
+        row.addEventListener("mouseover", () => {
+            animeImage.src = anime.img_link;
+            animeImage.style.opacity = "1"; // 讓圖片顯示
+        });
+
+        // 滑鼠移出：隱藏圖片（但保持空間）
+        row.addEventListener("mouseleave", () => {
+            animeImage.style.opacity = "0"; // 讓圖片變透明
+        });
+    });
+}
+
+function toggleDetails(row, anime) {
+
+    let table = row.closest("table"); // 獲取 table
+    // 確保 table 寬度固定，避免因展開/收起影響排版
+    if (!table.style.width) {
+        table.style.width = `${table.offsetWidth}px`;
+    }
+
+    let nextRow = row.nextElementSibling;
+    // 如果已展開，則移除
+    if (nextRow && nextRow.classList.contains("detailsRow")) {
+        nextRow.style.height = "0";
+        nextRow.remove();
+        return;
+    }
+    //
+    var s_season = "";
+    var s_year = "";
+    var s_progress = "";
+    var s_score = "";
+    var i=0;
+    while(i<anime.info.length){
+        s_season += "<th>S"+(i+1).toString()+"</th>";
+        s_year += "<td>"+anime.info[i].year.toString()+"</td>";
+        s_progress += "<td>"+anime.info[i].watched.toString()+" / "+anime.info[i].total.toString()+"</td>";
+        if (anime.info[i].score === ""){
+            s_score += "<td>-</td>";
+        }
+        else{
+            s_score += "<td>"+anime.info[i].score.toString()+" / 10</td>";
+        }
+        i++;
+    }
+
+    // 建立新的一行來顯示動畫詳細資訊
+    let detailsRow = document.createElement("tr");
+    detailsRow.classList.add("detailsRow");
+    detailsRow.innerHTML = `
+        <td colspan="4">
+            <div class="details-container">
+                <img src="${anime.img_link}" class="details-image">
+                <table class="details-table">
+                    <tr>
+                        <th></th>
+                        ${s_season}
+                        <th class="total-score-header">Total Score</th>
+                    </tr>
+                    <tr>
+                        <td>Year</td>
+                        ${s_year}
+                        <td rowspan="3" class="total-score">${anime.total_score}</td>
+                    </tr>
+                    <tr>
+                        <td>Progress</td>
+                        ${s_progress}
+                    </tr>
+                    <tr>
+                        <td>Score</td>
+                        ${s_score}
+                    </tr>
+                </table>
+            </div>
+        </td>
+    `;
+
+    row.after(detailsRow);
+
+}
+
+function printCardAnimes(animes, active_ids_array=[]) {
     var container = document.getElementById("id_container");
     container.innerHTML = ""; // 清空容器
 
@@ -334,7 +502,7 @@ function printAnimes(animes, active_ids_array=[]) {
         //左側作品封面（可點擊）
         s_cover = "<div class=\"cover\" onclick=\"toggleAnimeInfo(\'anime_"+animes[i].id.toString()+"\')\">" + "<img src=\""+animes[i].img_link+"\" alt=\""+animes[i].img_name+"\">" + "</div>";
         //右側動畫資訊表格（初始隱藏）
-        s_anime_info = "<div class=\"anime-info\">" + "<table class=\"anime-table\">";
+        s_anime_info = "<div class=\"anime-info\">" + "<table class=\"anime-card-table\">";
         //動畫名稱
         s_anime_info += "<tr class=\"title-row\">";//title-row沒做事
         s_anime_info += "<td colspan=\""+animes[i].title_row_colspan.toString()+"\" class=\"anime-name\">"+animes[i].name+"</td>";

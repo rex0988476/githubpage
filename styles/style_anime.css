@@ -86,7 +86,7 @@ footer {
     display: flex;  /* 讓動畫卡片橫向排列 */
     flex-wrap: wrap; /* 超出畫面時換行 */
     gap: 20px; /* 設定間距 */
-    justify-content: left; /* 靠左排列 */
+    justify-content: center; /* 靠中排列 */
 }
 
 /* 讓作品區塊保持固定高度，防止動畫展開時變化 */
@@ -162,7 +162,7 @@ footer {
 }
 
 /* 確保表格內容填滿父容器 */
-.anime-table {
+.anime-card-table {
     width: 100%;
     border-collapse: collapse;
     background: #f8f9fa;
@@ -173,13 +173,13 @@ footer {
 
 
 /* 讓表格內的文字有適當間距 */
-.anime-table td, .anime-table th {
+.anime-card-table td, .anime-card-table th {
     padding: 4px;
     text-align: center;
     font-size: 20px;
 }
 
-.anime-table td:first-child{
+.anime-card-table td:first-child{
     width: 100px; /* 你可以調整這個數值 */
     white-space: nowrap; /* 防止文字換行 */
 }
@@ -190,18 +190,167 @@ footer {
 }
 
 /* 表格標題列（表頭部分，如「第1季、第2季、...」） */
-.anime-table th {
+.anime-card-table th {
     background: #b1b1b1; /* **較深的灰色，區分表頭** */
     font-weight: bold;
 }
 /* 交錯行背景色，讓表格更清晰 */
-.anime-table tr:nth-child(even) {
+.anime-card-table tr:nth-child(even) {
     background: #d9d9d9; /* **淺灰色背景** */
 }
 
-.anime-table tr:nth-child(odd) {
+.anime-card-table tr:nth-child(odd) {
     background: #ffffff; /* **白色背景** */
 }
+
+/*list start*/
+/*合併*/
+/*
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+*/
+/*
+.container {
+    display: flex;
+    position: relative;  讓內部元素的絕對定位基於此容器
+    align-items: flex-start;  保持表格靠左 
+}
+*/
+/*
+.anime-container {
+    display: grid;
+    grid-template-columns: auto 1fr; /* 左邊圖片, 右邊表格 
+    gap: 20px; /* 讓圖片與表格有點間距 
+    align-items: start; /* 讓圖片與表格的 `tr` 對齊 
+}
+*/
+#anime-image {
+    width: 188px;
+    height: 268px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    position: fixed;/* 讓圖片固定在表格左側 */
+    left: 50px;  /* 固定左邊 50px */
+    opacity: 0; /* 預設透明 */
+    transition: opacity 0.3s ease-in-out; /* 平滑顯示 */
+    /*
+    object-fit: cover;
+    margin-right: 20px;
+    pointer-events: none; /* 讓滑鼠事件穿透 
+    */
+}
+
+.anime-list-table {
+    width: 1000px;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    table-layout: auto;
+    font-size: 20px;
+}
+.anime-list-table th, .anime-list-table td {
+    padding: 12px 15px;
+    text-align: left;
+    white-space: nowrap;
+}
+.anime-list-table thead {
+    background-color: #e9eef4;
+    color: #333;
+}
+.anime-list-table tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+.anime-list-table tbody tr:hover {
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+}
+
+.detailsRow {
+    background-color: #f9f9f9;
+}
+.details-content {
+    padding: 10px;
+    /*font-size: 20px;*/
+    color: #333;
+}
+.details-container {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+.details-image {
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+.details-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.details-table th, .details-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+.detailsRow {
+    background-color: inherit !important; /* 確保不改變背景顏色 */
+    color: inherit !important;
+    cursor: inherit !important;
+}
+.details-container {
+    background-color: #e9eef4;
+    color: inherit !important;
+    cursor: inherit !important;
+}
+/* 讓內部的表格、圖片等元素不受 hover 影響 */
+.details-container img,
+.details-container table,
+.details-container th,
+.details-container td {
+    pointer-events: none; /* 讓這些元素不會觸發 hover 效果 */
+}
+.detailsRow.show {
+    display: table-row;
+    height: auto;
+    opacity: 1;
+}
+/* 固定 Year, Progress, Rate 欄位寬度 */
+.details-table td:first-child,
+.details-table th:first-child {
+    width: 100px; /* 可調整 */
+    min-width: 100px;
+    text-align: center;
+}
+/* 固定 Total Rate 欄位寬度 */
+.details-table .total-score-header,
+.details-table .total-score {
+    width: 150px; /* 可調整 */
+    min-width: 150px;
+    text-align: center;
+}
+
+
+.total-score-header {
+    background-color: #ddd;
+    font-weight: bold;
+}
+.total-score {
+    /*font-size: 20px;*/
+    font-weight: bold;
+    background-color: #eee;
+}
+/*list end*/
 
 /* 響應式設計語法 */
 @media screen and (max-width: 768px) {
