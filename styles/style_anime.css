@@ -86,7 +86,7 @@ footer {
     display: flex;  /* 讓動畫卡片橫向排列 */
     flex-wrap: wrap; /* 超出畫面時換行 */
     gap: 20px; /* 設定間距 */
-    justify-content: center; /* 靠中排列 */
+    justify-content: left; /* 靠左排列(js在list模式時會改為center靠中排列)*/
 }
 
 /* 讓作品區塊保持固定高度，防止動畫展開時變化 */

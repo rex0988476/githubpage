@@ -85,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".view-mode-list-btn").classList.remove("active");
         this.classList.add("active");
         VIEWMODE = "card";
+        document.querySelector(".anime-container").style.justifyContent = "left";
         var sortedData = sortAnimeData(default_sort_type,default_order_type);
         printCardAnimes(sortedData);
     });
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector(".view-mode-card-btn").classList.remove("active");
         this.classList.add("active");
         VIEWMODE = "list";
+        document.querySelector(".anime-container").style.justifyContent = "center";
         var sortedData = sortAnimeData(default_sort_type,default_order_type);
         printListAnimes_init();
         printListAnimes(sortedData);
