@@ -31,28 +31,40 @@ var ANIMES = [];
 //console.log("當前視窗寬度:", window.innerWidth);
 //console.log("當前視窗高度:", window.innerHeight);
 
-// 展開全部anime
-const expandButton = document.querySelector(".expand-btn");
-expandButton.addEventListener("click", function () {
-    var inactiveIds = getInactiveAnimeID();
-    var i=0;
-    while(i<inactiveIds.length){
-        toggleAnimeInfo(inactiveIds[i]);
-        i++;
+function expandCollapseCard(type) {
+    var i;
+    if(type === "expand"){
+        var inactiveIds = getInactiveAnimeID();
+        i=0;
+        while(i<inactiveIds.length){
+            toggleAnimeInfo(inactiveIds[i]);
+            i++;
+        }
     }
-});
-
-// 收合全部anime
-const collapseButton = document.querySelector(".collapse-btn");
-collapseButton.addEventListener("click", function () {
-    var activeIds = getActiveAnimeID();
-    var i=0;
-    while(i<activeIds.length){
-        toggleAnimeInfo(activeIds[i]);
-        i++;
+    else if(type === "collapse"){
+        var activeIds = getActiveAnimeID();
+        i=0;
+        while(i<activeIds.length){
+            toggleAnimeInfo(activeIds[i]);
+            i++;
+        }
     }
-});
+}
 
+function createExpandCollapseBtnEventListener() {
+    // 展開全部anime
+    const expandButton = document.querySelector(".expand-btn");
+    expandButton.addEventListener("click", function () {
+        expandCollapseCard("expand");
+    });
+
+    // 收合全部anime
+    const collapseButton = document.querySelector(".collapse-btn");
+    collapseButton.addEventListener("click", function () {
+        expandCollapseCard("collapse");
+    });
+}
+createExpandCollapseBtnEventListener();
 // 
 var VIEWMODE = "card";
 document.addEventListener("DOMContentLoaded", function () {
@@ -81,19 +93,53 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // 切換顯示模式
+    // 切換成卡片模式
     document.querySelector(".view-mode-card-btn").addEventListener("click", function () {
         document.querySelector(".view-mode-list-btn").classList.remove("active");
         this.classList.add("active");
         VIEWMODE = "card";
-        document.querySelector(".anime-container").style.justifyContent = "left";
+        document.querySelector(".anime-container").style.justifyContent = "left";//靠左對齊
+        // 取得 <section class="anime-config">
+        const animeConfigSection = document.querySelector(".anime-config");
+        // 檢查是否已經存在 <div class="expand-collapse-container">
+        if (!animeConfigSection.querySelector(".expand-collapse-container")) {
+            // 創建 <div>
+            const newDiv = document.createElement("div");
+            newDiv.classList.add("expand-collapse-container");
+
+            // 創建 Expand 按鈕
+            const expandBtn = document.createElement("button");
+            expandBtn.classList.add("expand-btn");
+            expandBtn.textContent = "Expand All";
+
+            // 創建 Collapse 按鈕
+            const collapseBtn = document.createElement("button");
+            collapseBtn.classList.add("collapse-btn");
+            collapseBtn.textContent = "Collapse All";
+
+            // 將按鈕加入 <div>
+            newDiv.appendChild(expandBtn);
+            newDiv.appendChild(collapseBtn);
+
+            // 將新建立的 <div> 加入 <section class="anime-config"> 內
+            animeConfigSection.appendChild(newDiv);
+
+            createExpandCollapseBtnEventListener();//新增展開/收合按鈕的事件監聽
+        }
         var sortedData = sortAnimeData(default_sort_type,default_order_type);
         printCardAnimes(sortedData);
     });
+    // 切換成列表模式
     document.querySelector(".view-mode-list-btn").addEventListener("click", function () {
         document.querySelector(".view-mode-card-btn").classList.remove("active");
         this.classList.add("active");
         VIEWMODE = "list";
-        document.querySelector(".anime-container").style.justifyContent = "center";
+        expandCollapseCard("collapse");//收合全部
+        document.querySelector(".anime-container").style.justifyContent = "center";//置中對齊
+        const expand_collapse_container = document.querySelector(".expand-collapse-container");
+        if (expand_collapse_container) {
+            expand_collapse_container.remove();
+        }
         var sortedData = sortAnimeData(default_sort_type,default_order_type);
         printListAnimes_init();
         printListAnimes(sortedData);
@@ -382,7 +428,8 @@ function printListAnimes(animes, active_ids_array=[]) {
             `;
         }
         
-        row.addEventListener("click", () => toggleDetails(row, anime));
+        //row.addEventListener("click", () => toggleDetails(row, anime)); // 點擊展開/收起
+        
         tableBody.appendChild(row);
 
         /* //暫不使用 手機很難消除圖片
