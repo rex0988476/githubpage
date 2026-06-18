@@ -190,6 +190,7 @@ function calculate_all_season(){
         ANIMES[i].all_season_total_episodes = 0;
         ANIMES[i].has_unknown_progress = false;//progress 排序用：有任何一季 watched/total 為 "-"
         ANIMES[i].has_unknown_episodes = false;//totalEpisodes 排序用：有任何一季 total 為 "-"
+        ANIMES[i].has_unknown_total_score = (ANIMES[i].total_score === "-");//totalScore 排序用：總評分為 "-"
         while (j<ANIMES[i].info.length){
             var w = ANIMES[i].info[j].watched;
             var t = ANIMES[i].info[j].total;
@@ -243,7 +244,7 @@ function sortAnimeData(sort_type, order_type) {
     }
     if (activeOrderType === "ascending") {
         if (activeSortType === "totalScore") {
-            sortedData.sort((a, b) => a.total_score - b.total_score);
+            sortWithUnknownLast(sortedData, "has_unknown_total_score", (a, b) => a.total_score - b.total_score);
         } else if (activeSortType === "firstYear") {
             sortedData.sort((a, b) => a.info[0].year - b.info[0].year);
         } else if (activeSortType === "lastYear") {
@@ -256,7 +257,7 @@ function sortAnimeData(sort_type, order_type) {
     }
     else if (activeOrderType === "descending") {
         if (activeSortType === "totalScore") {
-            sortedData.sort((a, b) => b.total_score - a.total_score);
+            sortWithUnknownLast(sortedData, "has_unknown_total_score", (a, b) => b.total_score - a.total_score);
         } else if (activeSortType === "firstYear") {
             sortedData.sort((a, b) => b.info[0].year - a.info[0].year);
         } else if (activeSortType === "lastYear") {
@@ -307,7 +308,7 @@ function fetchExcel() {
             //get img links(第二個工作表)
             sheetName = workbook.SheetNames[1]; // 取得第二個工作表名稱
             var sheet_anime_imglinks = workbook.Sheets[sheetName]; //取得第二個工作表
-            var anime_img_link_root = sheet_anime_imglinks["C2"].v;//圖片資料夾路徑
+            var anime_img_link_root = getCellV(sheet_anime_imglinks, "C2", "");//圖片資料夾路徑（空白用 "" 代替）
             var img_names = [];//所有圖片名稱
             var i=2;
             //start at B2, godown, interval=1, end at the first empty cell
@@ -355,10 +356,11 @@ function fetchExcel() {
             var seasons_char = sheet_anime_info_seasons_start_char;
             while(sheet_anime_info["A"+i.toString()] && sheet_anime_info["A"+i.toString()].v.toString() && sheet_anime_info["A"+i.toString()].v.toString().trim() !== ""){//單元格不為 undefined、空白或純空格
                 id = sheet_anime_info["A"+i.toString()].v;
-                name_ = sheet_anime_info["B"+i.toString()].v.toString();
-                img_link = anime_img_link_root + img_names[j];
-                img_name = img_names[j].slice(0,-4);
-                total_score = sheet_anime_info["M"+i.toString()].v;
+                name_ = getCellV(sheet_anime_info, "B"+i.toString(), "(無標題)").toString();//名稱空白用 "(無標題)" 代替
+                var cur_img_name = (img_names[j] !== undefined && img_names[j] !== null) ? img_names[j].toString() : "";//圖片名稱不足時用空字串
+                img_link = (cur_img_name === "") ? "" : anime_img_link_root + cur_img_name;
+                img_name = (cur_img_name === "") ? "" : cur_img_name.slice(0,-4);
+                total_score = getCellV(sheet_anime_info, "M"+i.toString(), "-");//總評分空白用 "-" 代替
                 if (!(sheet_anime_info["N"+i.toString()] && sheet_anime_info["N"+i.toString()].v && sheet_anime_info["N"+i.toString()].v.toString().trim() !== "")){
                     types = "";
                 }
@@ -618,7 +620,12 @@ function printCardAnimes(animes, active_ids_array=[]) {
             j++;
         }
         //迴圈end
-        s_anime_info += "<td class=\"fixed-width\" rowspan=\"3\">"+animes[i].total_score.toString()+" / 10</td>";
+        if (animes[i].total_score === "-"){
+            s_anime_info += "<td class=\"fixed-width\" rowspan=\"3\">-</td>";
+        }
+        else{
+            s_anime_info += "<td class=\"fixed-width\" rowspan=\"3\">"+animes[i].total_score.toString()+" / 10</td>";
+        }
         s_anime_info += "</tr>";
         //看過的集數 / 總集數
         s_anime_info += "<tr>";
