@@ -186,13 +186,39 @@ function calculate_all_season(){
     var j=0;
     while (i<ANIMES.length){
         j=0;
+        ANIMES[i].all_season_unwatched_episode = 0;
+        ANIMES[i].all_season_total_episodes = 0;
+        ANIMES[i].has_unknown_progress = false;//progress 排序用：有任何一季 watched/total 為 "-"
+        ANIMES[i].has_unknown_episodes = false;//totalEpisodes 排序用：有任何一季 total 為 "-"
         while (j<ANIMES[i].info.length){
-            ANIMES[i].all_season_unwatched_episode += ANIMES[i].info[j].total - ANIMES[i].info[j].watched;
-            ANIMES[i].all_season_total_episodes += ANIMES[i].info[j].total;
+            var w = ANIMES[i].info[j].watched;
+            var t = ANIMES[i].info[j].total;
+            if (w === "-" || t === "-"){
+                ANIMES[i].has_unknown_progress = true;
+            }
+            else{
+                ANIMES[i].all_season_unwatched_episode += t - w;
+            }
+            if (t === "-"){
+                ANIMES[i].has_unknown_episodes = true;
+            }
+            else{
+                ANIMES[i].all_season_total_episodes += t;
+            }
             j++;
         }
         i++;
     }
+}
+
+// 依 cmp 排序，但 flagKey 為 true 的（含 "-" 的）一律排到最後面（不論升降序）
+function sortWithUnknownLast(arr, flagKey, cmp){
+    arr.sort((a, b) => {
+        if (a[flagKey] && b[flagKey]) return 0;
+        if (a[flagKey]) return 1;
+        if (b[flagKey]) return -1;
+        return cmp(a, b);
+    });
 }
 
 default_sort_type = "totalScore";
@@ -223,9 +249,9 @@ function sortAnimeData(sort_type, order_type) {
         } else if (activeSortType === "lastYear") {
             sortedData.sort((a, b) => a.info[a.info.length-1].year - b.info[b.info.length-1].year);
         } else if (activeSortType === "progress") {
-            sortedData.sort((a, b) => b.all_season_unwatched_episode - a.all_season_unwatched_episode);
+            sortWithUnknownLast(sortedData, "has_unknown_progress", (a, b) => b.all_season_unwatched_episode - a.all_season_unwatched_episode);
         } else if (activeSortType === "totalEpisodes") {
-            sortedData.sort((a, b) => a.all_season_total_episodes - b.all_season_total_episodes);
+            sortWithUnknownLast(sortedData, "has_unknown_episodes", (a, b) => a.all_season_total_episodes - b.all_season_total_episodes);
         }
     }
     else if (activeOrderType === "descending") {
@@ -236,9 +262,9 @@ function sortAnimeData(sort_type, order_type) {
         } else if (activeSortType === "lastYear") {
             sortedData.sort((a, b) => b.info[b.info.length-1].year - a.info[a.info.length-1].year);
         } else if (activeSortType === "progress") {
-            sortedData.sort((a, b) => a.all_season_unwatched_episode - b.all_season_unwatched_episode);
+            sortWithUnknownLast(sortedData, "has_unknown_progress", (a, b) => a.all_season_unwatched_episode - b.all_season_unwatched_episode);
         } else if (activeSortType === "totalEpisodes") {
-            sortedData.sort((a, b) => b.all_season_total_episodes - a.all_season_total_episodes);
+            sortWithUnknownLast(sortedData, "has_unknown_episodes", (a, b) => b.all_season_total_episodes - a.all_season_total_episodes);
         }
     }
     return sortedData;
@@ -256,6 +282,15 @@ function getInactiveAnimeID() {
     return inactiveIds;
 }
 
+
+// 安全讀取單元格的值；若為 undefined、空白或純空格則回傳 emptyVal
+function getCellV(sheet, addr, emptyVal){
+    var c = sheet[addr];
+    if (c && c.v !== undefined && c.v !== null && c.v.toString().trim() !== ""){
+        return c.v;
+    }
+    return emptyVal;
+}
 
 function fetchExcel() {
     //var url = "https://raw.githubusercontent.com/rex0988476/test/main/data.xlsx";
@@ -335,14 +370,9 @@ function fetchExcel() {
                 seasons_char = sheet_anime_info_seasons_start_char;
                 while(sheet_anime_info[seasons_char+i.toString()] && sheet_anime_info[seasons_char+i.toString()].v && sheet_anime_info[seasons_char+i.toString()].v.toString().trim() !== ""){//單元格不為 undefined、空白或純空格
                     year = sheet_anime_info[seasons_char+i.toString()].v;
-                    watched = sheet_anime_info[seasons_char+(i+1).toString()].v;
-                    total = sheet_anime_info[seasons_char+(i+2).toString()].v;
-                    if (!(sheet_anime_info[seasons_char+(i+3).toString()] && sheet_anime_info[seasons_char+(i+3).toString()].v && sheet_anime_info[seasons_char+(i+3).toString()].v.toString().trim() !== "")){
-                        score = "";
-                    }
-                    else{
-                        score = sheet_anime_info[seasons_char+(i+3).toString()].v;
-                    }
+                    watched = getCellV(sheet_anime_info, seasons_char+(i+1).toString(), "-");//空白用 "-" 代替
+                    total = getCellV(sheet_anime_info, seasons_char+(i+2).toString(), "-");//空白用 "-" 代替
+                    score = getCellV(sheet_anime_info, seasons_char+(i+3).toString(), "");//空白用 "" 代替
                     ANIMES[ANIMES.length-1].addInfo(year, watched, total, score);
                     k++;
                     seasons_char = String.fromCharCode(sheet_anime_info_seasons_start_char.charCodeAt(0) + k);
@@ -403,7 +433,7 @@ function printListAnimes(animes, active_ids_array=[]) {
         var i=0;
         var is_completed = true;
         while(i<anime.info.length){
-            if(anime.info[i].watched < anime.info[i].total){
+            if(anime.info[i].watched === "-" || anime.info[i].total === "-" || anime.info[i].watched < anime.info[i].total){
                 is_completed = false;
                 break;
             }
@@ -420,11 +450,14 @@ function printListAnimes(animes, active_ids_array=[]) {
             `;
         }
         else{
+            let progressText = (anime.info[i].watched === "-" || anime.info[i].total === "-")
+                ? "-"
+                : `${anime.info[i].watched.toString()} / ${anime.info[i].total.toString()}`;
             row.innerHTML = `
                 <td>${anime.name}</td>
                 <td>${anime.total_score}</td>
                 <td>S${i+1}</td>
-                <td>${anime.info[i].watched.toString()} / ${anime.info[i].total.toString()}</td>
+                <td>${progressText}</td>
             `;
         }
         
@@ -471,7 +504,12 @@ function toggleDetails(row, anime) {
     while(i<anime.info.length){
         s_season += "<th>S"+(i+1).toString()+"</th>";
         s_year += "<td>"+anime.info[i].year.toString()+"</td>";
-        s_progress += "<td>"+anime.info[i].watched.toString()+" / "+anime.info[i].total.toString()+"</td>";
+        if (anime.info[i].watched === "-" || anime.info[i].total === "-"){
+            s_progress += "<td>-</td>";
+        }
+        else{
+            s_progress += "<td>"+anime.info[i].watched.toString()+" / "+anime.info[i].total.toString()+"</td>";
+        }
         if (anime.info[i].score === ""){
             s_score += "<td>-</td>";
         }
@@ -588,7 +626,12 @@ function printCardAnimes(animes, active_ids_array=[]) {
         //迴圈
         j=0;
         while(j<animes[i].info.length){
-            s_anime_info += "<td>"+animes[i].info[j].watched.toString()+" / "+animes[i].info[j].total.toString()+"</td>";
+            if (animes[i].info[j].watched === "-" || animes[i].info[j].total === "-"){
+                s_anime_info += "<td>-</td>";
+            }
+            else{
+                s_anime_info += "<td>"+animes[i].info[j].watched.toString()+" / "+animes[i].info[j].total.toString()+"</td>";
+            }
             j++;
         }
         //迴圈end
